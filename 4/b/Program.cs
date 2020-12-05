@@ -10,7 +10,6 @@ namespace _1
         static void Main(string[] args)
         {
             var input = File.ReadAllText("input.txt");
-            //input.Replace(Environment.NewLine," ");
             var rows = input.Split(new string[] {Environment.NewLine + Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
             var validcount = 0;
             foreach(var row in rows){
