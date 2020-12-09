@@ -21,6 +21,9 @@ namespace _1
                 // found solution by then
                 while(sum<invalidvalue){
                     sum += input[ii];
+                    if(sum > invalidvalue){
+                        break;
+                    }                    
                     if(sum == invalidvalue){
                         // get the range amd sort smallest to largest
                         var rangesorted = input.Skip(i).Take(ii - i + 1).OrderBy(x=>x);
@@ -28,12 +31,7 @@ namespace _1
                         Console.WriteLine((rangesorted.First() + rangesorted.Last()));
                         Console.Read();
                     }
-                    if(sum > invalidvalue){
-                        break;
-                    }
-                    else{
-                        ii++;
-                    }
+                    ii++;
                 }
             }
         }
