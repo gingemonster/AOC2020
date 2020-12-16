@@ -10,7 +10,25 @@ namespace _16
     {
         static void Main(string[] args)
         {
+            var watch = new System.Diagnostics.Stopwatch();
+            var timings = new List<long>();
             var lines = File.ReadAllLines("input.txt").ToArray();
+            for (var i = 0; i < 12; i++)
+            {
+                watch.Start();
+                var result = Part2(lines, i);
+                watch.Stop();
+                if(i==4) Console.WriteLine(result);
+                if (i > 1) timings.Add(watch.ElapsedMilliseconds);
+                watch.Reset();
+            }
+
+            Console.WriteLine(timings.Average());
+        }
+        
+        static long Part2(string[] lines, int runindex)
+        {
+            
             var i =0;
             var currentline = lines[i];
             var rules = new List<Rule>();
@@ -74,8 +92,7 @@ namespace _16
                 answer = answer * value;
             });
 
-            Console.WriteLine(answer);
-            Console.Read();
+            return answer;
         }
         static void FindValidRulesPerField(List<Rule> rules, Ticket ticket){
             foreach(var field in ticket.Fields){
