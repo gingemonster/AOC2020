@@ -10,7 +10,7 @@ namespace _16
     {
         static void Main(string[] args)
         {
-            var lines = File.ReadAllLines("test.txt").ToArray();
+            var lines = File.ReadAllLines("input.txt").ToArray();
             var i =0;
             var currentline = lines[i];
             var rules = new List<Rule>();
@@ -21,9 +21,11 @@ namespace _16
             }
 
             // skip yourticket
-            i+=5;
+            i+=2;
+            var myticket = new Ticket() { Fields = lines[i].Split(",").Select(x=>int.Parse(x)).Select(l=> new Field() { Value = l }).ToList() };
+            i+=3;
 
-            var othertickets = new List<Ticket>();
+            var othertickets = new List<Ticket>() { myticket };
             while(i<lines.Length){
                 othertickets.Add(new Ticket() { Fields = lines[i].Split(",").Select(x=>int.Parse(x)).Select(l=> new Field() { Value = l }).ToList() });
                 i++;
@@ -31,12 +33,48 @@ namespace _16
             
             othertickets.ForEach(t=> FindValidRulesPerField(rules, t));
 
-            var validtickets = othertickets.Where(x=>x.Fields.Any(f=>f.MatchingRuleIndexes.Count==0));
+            var validtickets = othertickets.Where(x=>x.Fields.All(f=>f.MatchingRuleIndexes.Count>0)).ToArray();
 
+            // find fields across all tickets that only have one rule in common
+            var foundruleindexes = new List<int>();
+            var fieldguesses = new List<FieldGuesses>();
+            for(var ii = 0; ii < validtickets[0].Fields.Count; ii++){
+                var intersecting = validtickets.Select(t=>t.Fields[ii].MatchingRuleIndexes).Cast<IEnumerable<int>>().Aggregate((x,y) => x.Intersect(y));
+                fieldguesses.Add(new FieldGuesses() { FieldIndex = ii, RuleGuesses = intersecting.ToList() });
+            }
 
+            var indexesremoved = new List<int>();
+            while(fieldguesses.Any(fg=>fg.RuleGuesses.Count>1)){
+                // find first fieldguess with only 1 rule guess
+                var lastsingleruleguess = fieldguesses.Where(fg=>fg.RuleGuesses.Count==1 && !indexesremoved.Contains(fg.RuleGuesses[0])).Last(); // hopefully will keep moving forward
+                var toremove = lastsingleruleguess.RuleGuesses.First();
+                indexesremoved.Add(toremove);
+                // remove this rule index from all others and continue
+                fieldguesses.Where(fg=>fg!=lastsingleruleguess).ToList().ForEach(fg=>fg.RuleGuesses.Remove(toremove));
+            }
 
+            var departurerules = rules.Select((r,i) => new { Rule= r, Index= i}).Where(r=>r.Rule.Name.ToLower().Contains("departure")).ToList();
 
-            Console.WriteLine("invalidfields.Sum()");
+            // get values for each departure by finding matching field
+            foreach(var departurerule in departurerules){
+                // find matching field
+                var fieldindex = fieldguesses.Where(fg=>fg.RuleGuesses[0] == departurerule.Index).First().FieldIndex;
+                var value = myticket.Fields[fieldindex].Value;
+            }
+
+            var test = departurerules.Select(dr=>{
+                var fieldindex = fieldguesses.Where(fg=>fg.RuleGuesses[0] == dr.Index).First().FieldIndex;
+                return myticket.Fields[fieldindex].Value;
+            });
+
+            long answer = 1;
+            departurerules.ForEach(dr=>{
+                var fieldindex = fieldguesses.Where(fg=>fg.RuleGuesses[0] == dr.Index).First().FieldIndex;
+                var value = myticket.Fields[fieldindex].Value;
+                answer = answer * value;
+            });
+
+            Console.WriteLine(answer);
             Console.Read();
         }
         static void FindValidRulesPerField(List<Rule> rules, Ticket ticket){
