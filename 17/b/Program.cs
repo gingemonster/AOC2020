@@ -12,7 +12,7 @@ namespace _17
         {
             var watch = new System.Diagnostics.Stopwatch();
             var timings = new List<long>();
-            var lines = File.ReadAllText("test.txt");
+            var lines = File.ReadAllText("input.txt");
             for (var i = 0; i < 20; i++)
             {
                 watch.Start();
@@ -79,6 +79,9 @@ namespace _17
                     }
                 }                
             }
+
+            // remove empty
+            points = points.Where(p=>p.Value!='.').ToDictionary(entry => entry.Key, entry => entry.Value);
         }
 
         static char ProcessPoint(Dictionary<Tuple<int,int,int,int>, char> points, Tuple<int,int,int,int> pointkey){
@@ -95,7 +98,8 @@ namespace _17
                             points.TryGetValue(thispoint, out possiblevalue);
 
                             // first ensuring we arent counting the point itself, is this neighboor active?
-                            if(thispoint != pointkey  && possiblevalue == '#'){
+                            //if(thispoint != pointkey  && possiblevalue == '#'){
+                            if(!(thispoint.Item1 == pointkey.Item1 && thispoint.Item2 == pointkey.Item2 && thispoint.Item3 == pointkey.Item3 && thispoint.Item4 == pointkey.Item4)  && possiblevalue == '#'){
                                 numactiveneighbours++;
                             }
                         }
