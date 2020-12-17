@@ -12,8 +12,8 @@ namespace _17
         {
             var watch = new System.Diagnostics.Stopwatch();
             var timings = new List<long>();
-            var lines = File.ReadAllText("test.txt");
-            for (var i = 0; i < 1; i++)
+            var lines = File.ReadAllText("input.txt");
+            for (var i = 0; i < 20; i++)
             {
                 watch.Start();
                 var result = Part1(lines, i);
@@ -50,7 +50,6 @@ namespace _17
         static void ProcessCycle(Dictionary<ValueTuple<int,int,int>, char> points){
             // for each cycle our set of points needs to grow to point a shell 1 place
             // further out than the edge that has at least active point
-
             var activepoints = points.Where(p=>p.Value == '#');
             var highestx = activepoints.Max(p=>p.Key.Item1) + 1;
             var highesty = activepoints.Max(p=>p.Key.Item2) + 1;
@@ -61,7 +60,7 @@ namespace _17
 
             // loop 3d grid
             var clonedictionary = points.ToDictionary(entry => entry.Key, entry => entry.Value); // done want to effect the dictionary as we loop through so use clone
-            for(var z=lowestx;z<=highestz;z++){
+            for(var z=lowestz;z<=highestz;z++){
                 for(var y=lowesty;y<=highesty;y++){
                     for(var x=lowestx;x<=highestx;x++){
                         // check if we have a entry for this position
@@ -80,12 +79,15 @@ namespace _17
         static char ProcessPoint(Dictionary<ValueTuple<int,int,int>, char> points, ValueTuple<int,int,int> pointkey){
             var numactiveneighbours = 0;
             var result = points[pointkey];
+
+            // loop all neighboors +-1 from current point in all three planes
             for(var z = pointkey.Item3-1; z<=pointkey.Item3+1;z++){
                 for(var y = pointkey.Item2-1; y<=pointkey.Item2+1;y++){
                     for(var x = pointkey.Item1-1; x<=pointkey.Item1+1;x++){
                         char possiblevalue;
                         var thispoint = ValueTuple.Create(x,y,z);
                         points.TryGetValue(thispoint, out possiblevalue);
+
                         // first ensuring we arent counting the point itself, is this neighboor active?
                         if(thispoint != pointkey  && possiblevalue == '#'){
                             numactiveneighbours++;
