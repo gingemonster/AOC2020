@@ -19,7 +19,7 @@ namespace _18a
                 watch.Start();
                 var result = Part1(lines, i);
                 watch.Stop();
-                if(i==4) Console.WriteLine(result); //10329548556 too low
+                if(i==4) Console.WriteLine(result);
                 if (i > 1) timings.Add(watch.ElapsedMilliseconds);
                 watch.Reset();
             }
@@ -31,7 +31,7 @@ namespace _18a
         {
             var lines = input.Split(Environment.NewLine).ToList();
             
-            return lines.Sum(l=>ProcessLine(l));;
+            return lines.Sum(l=>ProcessLine(l));
         }
 
         static long ProcessLine(string input){
@@ -66,8 +66,6 @@ namespace _18a
                     case "*":
                         result*=long.Parse(parts[i+1]);
                         i++;
-                        break;
-                    default:
                         break;
                 }
             }

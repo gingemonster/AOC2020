@@ -18,7 +18,7 @@ namespace _18b
             for (var i = 0; i < 20; i++)
             {
                 watch.Start();
-                var result = Part1(lines, i);
+                var result = Part2(lines, i);
                 watch.Stop();
                 if(i==4) Console.WriteLine(result);
                 if (i > 1) timings.Add(watch.ElapsedMilliseconds);
@@ -28,7 +28,7 @@ namespace _18b
             Console.WriteLine(timings.Average());
         }
         
-        static long Part1(string input, int runindex)
+        static long Part2(string input, int runindex)
         {
             var lines = input.Split(Environment.NewLine).ToList();
             
