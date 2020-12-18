@@ -8,6 +8,8 @@ namespace _18b
 {
     class Program
     {
+        static Regex plusregex = new Regex(@"\d* \+ \d*", RegexOptions.Compiled);
+        static Regex notnestedexpressions = new Regex(@"\(([^\(\)]*)\)", RegexOptions.Compiled);
         static void Main(string[] args)
         {
             var watch = new System.Diagnostics.Stopwatch();
@@ -18,7 +20,7 @@ namespace _18b
                 watch.Start();
                 var result = Part1(lines, i);
                 watch.Stop();
-                if(i==4) Console.WriteLine(result); //10329548556 too low
+                if(i==4) Console.WriteLine(result);
                 if (i > 1) timings.Add(watch.ElapsedMilliseconds);
                 watch.Reset();
             }
@@ -34,7 +36,7 @@ namespace _18b
         }
 
         static long ProcessLine(string input){
-            var notnestedexpressions = new Regex(@"\(([^\(\)]*)\)");
+            
             var match = notnestedexpressions.Match(input);
 
             // doing one match at a time to make replacement easier as string wont change between matches
@@ -53,9 +55,23 @@ namespace _18b
         }
 
         static long ProcessesExpression(string input){
-            // just process operators in order left to right
+            
+            var plusmatch = plusregex.Match(input);
+
+            // process all the pluses first
+            while(plusmatch.Success && input.ToCharArray().Count(c=>c=='+'||c=='*') > 1){
+                // expand
+                var r = ProcessesExpression(plusmatch.Value);
+
+                // replace matche's place in string with result
+                input = input.Remove(plusmatch.Index,plusmatch.Length).Insert(plusmatch.Index,r.ToString());
+
+                // get next one that needs expanding
+                plusmatch = plusregex.Match(input);
+            }
+
             var parts = input.Split(' ');
-            var result = long.Parse(parts[0]);
+            var result = long.Parse(parts[0]);            
 
             // + processed before *
             
@@ -68,8 +84,6 @@ namespace _18b
                     case "*":
                         result*=long.Parse(parts[i+1]);
                         i++;
-                        break;
-                    default:
                         break;
                 }
             }

@@ -8,6 +8,7 @@ namespace _18a
 {
     class Program
     {
+        static Regex notnestedexpressions = new Regex(@"\(([^\(\)]*)\)", RegexOptions.Compiled);
         static void Main(string[] args)
         {
             var watch = new System.Diagnostics.Stopwatch();
@@ -34,7 +35,6 @@ namespace _18a
         }
 
         static long ProcessLine(string input){
-            var notnestedexpressions = new Regex(@"\(([^\(\)]*)\)");
             var match = notnestedexpressions.Match(input);
 
             // doing one match at a time to make replacement easier as string wont change between matches
